@@ -232,17 +232,33 @@ const handleIncomingMessage = (topic, message) => {
     let data
     try {
       data = JSON.parse(message)
+      console.log('✅ Mensagem parseada como JSON:', data)
     } catch {
       data = { value: message }
+      console.log('📝 Mensagem tratada como texto simples')
     }
 
     // Determinar tipo de mensagem baseado nos tópicos
     if (topic === 'casaAutomatica/sala/sensor') {
-      // Dados de sensores da sala
+      // Dados de sensores da sala (DHT22)
+      console.log('🌡️💧 Processando dados do sensor DHT22')
+      
       const callback = sensorCallbacks.get('sala/sensores')
       if (callback) {
-        console.log('📊 Atualizando dados dos sensores da sala')
-        callback(data)
+        console.log('📊 Enviando dados para callback da sala')
+        
+        // Enviar os dados originais para o callback processar
+        if (typeof message === 'string' && !message.startsWith('{')) {
+          // Se for string simples, enviar como string
+          callback(message)
+        } else {
+          // Se for objeto ou JSON, enviar o dado parseado
+          callback(data)
+        }
+        
+        console.log('✅ Dados enviados para interface da sala')
+      } else {
+        console.log('⚠️ Nenhum callback registrado para sensores da sala')
       }
     } else if (topic === 'casaAutomatica/garagem/status') {
       // Status geral da garagem
