@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Casa Automática - Dashboard</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- Paho MQTT Client - versão mais confiável -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+    <script>
+      // Verificar se o Paho carregou corretamente
+      window.addEventListener('load', function() {
+        if (typeof Paho !== 'undefined') {
+          console.log('✅ Paho MQTT carregado com sucesso');
+        } else {
+          console.error('❌ Falha ao carregar Paho MQTT');
+        }
+      });
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
