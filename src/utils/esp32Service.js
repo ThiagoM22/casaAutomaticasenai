@@ -226,6 +226,8 @@ const onMessageArrived = (message) => {
 // Processar mensagens recebidas
 const handleIncomingMessage = (topic, message) => {
   try {
+    console.log(`🔍 Processando mensagem: ${topic} = "${message}"`)
+    
     // Parse da mensagem (pode ser JSON ou texto simples)
     let data
     try {
@@ -239,24 +241,34 @@ const handleIncomingMessage = (topic, message) => {
       // Dados de sensores da sala
       const callback = sensorCallbacks.get('sala/sensores')
       if (callback) {
+        console.log('📊 Atualizando dados dos sensores da sala')
         callback(data)
       }
     } else if (topic === 'casaAutomatica/garagem/status') {
       // Status geral da garagem
       const callback = statusCallbacks.get('garagem/status')
       if (callback) {
+        console.log('🏠 Atualizando status geral da garagem')
         callback(data.value || data.status || message)
       }
     } else {
-      // Status específico de dispositivos
+      // Status específico de dispositivos - mapear corretamente
       const deviceTopic = topic.replace(`${TOPIC_PREFIX}/`, '')
+      console.log(`🎯 Mapeando tópico: ${topic} -> ${deviceTopic}`)
+      
+      // Buscar callback registrado para este dispositivo
       const callback = statusCallbacks.get(deviceTopic)
       if (callback) {
+        console.log(`✅ Callback encontrado para: ${deviceTopic}`)
+        console.log(`📤 Enviando status: "${message}" para callback`)
         callback(data.value || data.status || message)
+      } else {
+        console.log(`⚠️ Nenhum callback registrado para: ${deviceTopic}`)
+        console.log('🔍 Callbacks disponíveis:', Array.from(statusCallbacks.keys()))
       }
     }
   } catch (error) {
-    console.error('Erro ao processar mensagem:', error)
+    console.error('❌ Erro ao processar mensagem:', error)
   }
 }
 

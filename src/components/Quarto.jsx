@@ -10,14 +10,17 @@ function Quarto() {
   useEffect(() => {
     // Callbacks para status dos dispositivos
     const handleCortinaStatus = (status) => {
+      console.log('📨 Status cortina recebido:', status)
       setCortina(status === 'aberta' ? 'aberta' : 'fechada')
     }
 
     const handleLuzQuartoStatus = (status) => {
+      console.log('📨 Status luz quarto recebido:', status)
       setLuzQuarto(status === 'ligada' ? 'ligada' : 'desligada')
     }
 
     const handleTomadaStatus = (status) => {
+      console.log('📨 Status tomada recebido:', status)
       setTomada(status === 'ligada' ? 'ligada' : 'desligada')
     }
 
@@ -27,39 +30,63 @@ function Quarto() {
     subscribeToDeviceStatus('quarto/tomada', handleTomadaStatus)
   }, [])
 
-  const toggleCortina = async () => {
-    const novoStatus = cortina === 'fechada' ? 'aberta' : 'fechada'
-    const comando = novoStatus === 'aberta' ? 'abrir' : 'fechar'
-    
+  const abrirCortina = async () => {
     try {
-      await sendCommand('quarto/cortina', comando)
-      setCortina(novoStatus)
+      console.log('🎯 Enviando comando: abrir para cortina')
+      await sendCommand('quarto/cortina', 'abrir')
+      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
     } catch (error) {
-      console.error('Erro ao controlar cortina:', error)
+      console.error('❌ Erro ao abrir cortina:', error)
     }
   }
 
-  const toggleLuzQuarto = async () => {
-    const novoStatus = luzQuarto === 'desligada' ? 'ligada' : 'desligada'
-    const comando = novoStatus === 'ligada' ? 'ligar' : 'desligar'
-    
+  const fecharCortina = async () => {
     try {
-      await sendCommand('quarto/luz', comando)
-      setLuzQuarto(novoStatus)
+      console.log('🎯 Enviando comando: fechar para cortina')
+      await sendCommand('quarto/cortina', 'fechar')
+      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
     } catch (error) {
-      console.error('Erro ao controlar luz do quarto:', error)
+      console.error('❌ Erro ao fechar cortina:', error)
     }
   }
 
-  const toggleTomada = async () => {
-    const novoStatus = tomada === 'desligada' ? 'ligada' : 'desligada'
-    const comando = novoStatus === 'ligada' ? 'ligar' : 'desligar'
-    
+  const ligarLuzQuarto = async () => {
     try {
-      await sendCommand('quarto/tomada', comando)
-      setTomada(novoStatus)
+      console.log('🎯 Enviando comando: ligar para luz do quarto')
+      await sendCommand('quarto/luz', 'ligar')
+      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
     } catch (error) {
-      console.error('Erro ao controlar tomada:', error)
+      console.error('❌ Erro ao ligar luz do quarto:', error)
+    }
+  }
+
+  const desligarLuzQuarto = async () => {
+    try {
+      console.log('🎯 Enviando comando: desligar para luz do quarto')
+      await sendCommand('quarto/luz', 'desligar')
+      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
+    } catch (error) {
+      console.error('❌ Erro ao desligar luz do quarto:', error)
+    }
+  }
+
+  const ligarTomada = async () => {
+    try {
+      console.log('🎯 Enviando comando: ligar para tomada')
+      await sendCommand('quarto/tomada', 'ligar')
+      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
+    } catch (error) {
+      console.error('❌ Erro ao ligar tomada:', error)
+    }
+  }
+
+  const desligarTomada = async () => {
+    try {
+      console.log('🎯 Enviando comando: desligar para tomada')
+      await sendCommand('quarto/tomada', 'desligar')
+      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
+    } catch (error) {
+      console.error('❌ Erro ao desligar tomada:', error)
     }
   }
 
@@ -70,34 +97,58 @@ function Quarto() {
       <div className="controls">
         <div className="control-item">
           <h3>Cortina</h3>
-          <button 
-            className={`btn ${cortina === 'aberta' ? 'btn-warning' : 'btn-secondary'}`}
-            onClick={toggleCortina}
-          >
-            {cortina === 'aberta' ? '🪟 Fechar' : '🌅 Abrir'}
-          </button>
+          <div className="button-group">
+            <button 
+              className="btn btn-warning"
+              onClick={abrirCortina}
+            >
+              🌅 Abrir
+            </button>
+            <button 
+              className="btn btn-secondary"
+              onClick={fecharCortina}
+            >
+              🪟 Fechar
+            </button>
+          </div>
           <span className="status">Status: {cortina}</span>
         </div>
 
         <div className="control-item">
           <h3>Luz do Quarto</h3>
-          <button 
-            className={`btn ${luzQuarto === 'ligada' ? 'btn-warning' : 'btn-secondary'}`}
-            onClick={toggleLuzQuarto}
-          >
-            {luzQuarto === 'ligada' ? '💡 Desligar' : '🔆 Ligar'}
-          </button>
+          <div className="button-group">
+            <button 
+              className="btn btn-warning"
+              onClick={ligarLuzQuarto}
+            >
+              🔆 Ligar
+            </button>
+            <button 
+              className="btn btn-secondary"
+              onClick={desligarLuzQuarto}
+            >
+              💡 Desligar
+            </button>
+          </div>
           <span className="status">Status: {luzQuarto}</span>
         </div>
 
         <div className="control-item">
           <h3>Tomada</h3>
-          <button 
-            className={`btn ${tomada === 'ligada' ? 'btn-success' : 'btn-secondary'}`}
-            onClick={toggleTomada}
-          >
-            {tomada === 'ligada' ? '🔌 Desligar' : '⚡ Ligar'}
-          </button>
+          <div className="button-group">
+            <button 
+              className="btn btn-success"
+              onClick={ligarTomada}
+            >
+              ⚡ Ligar
+            </button>
+            <button 
+              className="btn btn-secondary"
+              onClick={desligarTomada}
+            >
+              🔌 Desligar
+            </button>
+          </div>
           <span className="status">Status: {tomada}</span>
         </div>
       </div>

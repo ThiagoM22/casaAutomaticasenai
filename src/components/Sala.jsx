@@ -12,6 +12,7 @@ function Sala() {
   useEffect(() => {
     // Callback para dados dos sensores
     const handleSensorData = (data) => {
+      console.log('📨 Dados dos sensores recebidos:', data)
       if (data.temperature !== undefined) {
         setTemperatura(parseFloat(data.temperature))
       }
@@ -22,14 +23,17 @@ function Sala() {
 
     // Callbacks para status dos dispositivos
     const handleACStatus = (status) => {
+      console.log('📨 Status AC recebido:', status)
       setArCondicionado(status === 'ligado' ? 'ligado' : 'desligado')
     }
 
     const handleHumidifierStatus = (status) => {
+      console.log('📨 Status umidificador recebido:', status)
       setUmidificador(status === 'ligado' ? 'ligado' : 'desligado')
     }
 
     const handleLightStatus = (status) => {
+      console.log('📨 Status luz sala recebido:', status)
       setLuzSala(status === 'ligada' ? 'ligada' : 'desligada')
     }
 
@@ -41,7 +45,6 @@ function Sala() {
 
     // Fallback: simulação caso MQTT não esteja funcionando
     const fallbackInterval = setInterval(() => {
-      // Só simula se não recebeu dados reais por um tempo
       setTemperatura(prev => {
         const variation = (Math.random() - 0.5) * 2
         return Math.max(18, Math.min(35, prev + variation))
@@ -50,46 +53,70 @@ function Sala() {
         const variation = (Math.random() - 0.5) * 5
         return Math.max(30, Math.min(80, prev + variation))
       })
-    }, 10000) // Intervalo maior para dar prioridade ao MQTT
+    }, 10000)
 
     return () => {
       clearInterval(fallbackInterval)
     }
   }, [])
 
-  const toggleArCondicionado = async () => {
-    const novoStatus = arCondicionado === 'desligado' ? 'ligado' : 'desligado'
-    const comando = novoStatus === 'ligado' ? 'ligar' : 'desligar'
-    
+  const ligarArCondicionado = async () => {
     try {
-      await sendCommand('sala/ac', comando)
-      setArCondicionado(novoStatus)
+      console.log('🎯 Enviando comando: ligar para ar-condicionado')
+      await sendCommand('sala/ac', 'ligar')
+      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
     } catch (error) {
-      console.error('Erro ao controlar ar-condicionado:', error)
+      console.error('❌ Erro ao ligar ar-condicionado:', error)
     }
   }
 
-  const toggleUmidificador = async () => {
-    const novoStatus = umidificador === 'desligado' ? 'ligado' : 'desligado'
-    const comando = novoStatus === 'ligado' ? 'ligar' : 'desligar'
-    
+  const desligarArCondicionado = async () => {
     try {
-      await sendCommand('sala/umidificador', comando)
-      setUmidificador(novoStatus)
+      console.log('🎯 Enviando comando: desligar para ar-condicionado')
+      await sendCommand('sala/ac', 'desligar')
+      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
     } catch (error) {
-      console.error('Erro ao controlar umidificador:', error)
+      console.error('❌ Erro ao desligar ar-condicionado:', error)
     }
   }
 
-  const toggleLuzSala = async () => {
-    const novoStatus = luzSala === 'desligada' ? 'ligada' : 'desligada'
-    const comando = novoStatus === 'ligada' ? 'ligar' : 'desligar'
-    
+  const ligarUmidificador = async () => {
     try {
-      await sendCommand('sala/luz', comando)
-      setLuzSala(novoStatus)
+      console.log('🎯 Enviando comando: ligar para umidificador')
+      await sendCommand('sala/umidificador', 'ligar')
+      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
     } catch (error) {
-      console.error('Erro ao controlar luz da sala:', error)
+      console.error('❌ Erro ao ligar umidificador:', error)
+    }
+  }
+
+  const desligarUmidificador = async () => {
+    try {
+      console.log('🎯 Enviando comando: desligar para umidificador')
+      await sendCommand('sala/umidificador', 'desligar')
+      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
+    } catch (error) {
+      console.error('❌ Erro ao desligar umidificador:', error)
+    }
+  }
+
+  const ligarLuzSala = async () => {
+    try {
+      console.log('🎯 Enviando comando: ligar para luz da sala')
+      await sendCommand('sala/luz', 'ligar')
+      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
+    } catch (error) {
+      console.error('❌ Erro ao ligar luz da sala:', error)
+    }
+  }
+
+  const desligarLuzSala = async () => {
+    try {
+      console.log('🎯 Enviando comando: desligar para luz da sala')
+      await sendCommand('sala/luz', 'desligar')
+      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
+    } catch (error) {
+      console.error('❌ Erro ao desligar luz da sala:', error)
     }
   }
 
@@ -111,34 +138,58 @@ function Sala() {
       <div className="controls">
         <div className="control-item">
           <h3>Ar-condicionado</h3>
-          <button 
-            className={`btn ${arCondicionado === 'ligado' ? 'btn-info' : 'btn-secondary'}`}
-            onClick={toggleArCondicionado}
-          >
-            {arCondicionado === 'ligado' ? '❄️ Desligar' : '🌀 Ligar'}
-          </button>
+          <div className="button-group">
+            <button 
+              className="btn btn-info"
+              onClick={ligarArCondicionado}
+            >
+              🌀 Ligar
+            </button>
+            <button 
+              className="btn btn-secondary"
+              onClick={desligarArCondicionado}
+            >
+              ❄️ Desligar
+            </button>
+          </div>
           <span className="status">Status: {arCondicionado}</span>
         </div>
 
         <div className="control-item">
           <h3>Umidificador</h3>
-          <button 
-            className={`btn ${umidificador === 'ligado' ? 'btn-info' : 'btn-secondary'}`}
-            onClick={toggleUmidificador}
-          >
-            {umidificador === 'ligado' ? '💨 Desligar' : '🌊 Ligar'}
-          </button>
+          <div className="button-group">
+            <button 
+              className="btn btn-info"
+              onClick={ligarUmidificador}
+            >
+              🌊 Ligar
+            </button>
+            <button 
+              className="btn btn-secondary"
+              onClick={desligarUmidificador}
+            >
+              💨 Desligar
+            </button>
+          </div>
           <span className="status">Status: {umidificador}</span>
         </div>
 
         <div className="control-item">
           <h3>Luz da Sala</h3>
-          <button 
-            className={`btn ${luzSala === 'ligada' ? 'btn-warning' : 'btn-secondary'}`}
-            onClick={toggleLuzSala}
-          >
-            {luzSala === 'ligada' ? '💡 Desligar' : '🔆 Ligar'}
-          </button>
+          <div className="button-group">
+            <button 
+              className="btn btn-warning"
+              onClick={ligarLuzSala}
+            >
+              🔆 Ligar
+            </button>
+            <button 
+              className="btn btn-secondary"
+              onClick={desligarLuzSala}
+            >
+              💡 Desligar
+            </button>
+          </div>
           <span className="status">Status: {luzSala}</span>
         </div>
       </div>
