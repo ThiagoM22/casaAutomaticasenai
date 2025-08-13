@@ -1,6 +1,6 @@
 // Configuração do MQTT - seguindo o padrão do ESP32
 const MQTT_BROKER = "broker.hivemq.com";
-const MQTT_PORT = 8000; // Porta WebSocket
+const MQTT_PORT = 8884; // Porta WebSocket Segura (WSS)
 const TOPIC_PREFIX = "casaAutomatica"; // Prefixo para todos os tópicos
 
 // Cliente MQTT
@@ -206,7 +206,7 @@ export const connectMQTT = async () => {
             connectionPromise = null;
             reject(error);
           },
-          useSSL: false,
+          useSSL: true, // Habilitar SSL para conexão WSS
           timeout: 10,
           keepAliveInterval: 30,
           cleanSession: true,
