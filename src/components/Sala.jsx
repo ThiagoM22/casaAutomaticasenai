@@ -235,8 +235,8 @@ function Sala() {
   return (
     <div className="environment-card">
       <h2 
-        className={isExpanded ? 'expanded' : ''} 
-        onClick={toggleMobileExpanded}
+   className={isExpanded ? 'expanded' : ''} 
+   onClick={toggleMobileExpanded}
       >
         🛋️ Sala
       </h2>
