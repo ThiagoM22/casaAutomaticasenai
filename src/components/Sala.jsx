@@ -330,7 +330,8 @@ function Sala() {
           </div>
         </div>
       </div>
+    </div>
   )
 }
 
-export default Sala
+export default Sala;
