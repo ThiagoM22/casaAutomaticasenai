@@ -395,6 +395,72 @@ html {
   border-color: rgba(107, 114, 128, 0.8);
 }
 
+
+/* ...existing code... */
+
+/* Light theme button visibility improvements */
+[data-theme="light"] .btn {
+    border-width: 2px;
+    font-weight: 500;
+  }
+  
+  [data-theme="light"] .btn-success {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: #16a34a;
+    color: #15803d;
+  }
+  
+  [data-theme="light"] .btn-success:hover {
+    background: rgba(34, 197, 94, 0.25);
+    border-color: #15803d;
+  }
+  
+  [data-theme="light"] .btn-danger {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #dc2626;
+    color: #dc2626;
+  }
+  
+  [data-theme="light"] .btn-danger:hover {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: #b91c1c;
+  }
+  
+  [data-theme="light"] .btn-warning {
+    background: rgba(251, 191, 36, 0.15);
+    border-color: #d97706;
+    color: #d97706;
+  }
+  
+  [data-theme="light"] .btn-warning:hover {
+    background: rgba(251, 191, 36, 0.25);
+    border-color: #b45309;
+  }
+  
+  [data-theme="light"] .btn-info {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: #2563eb;
+    color: #2563eb;
+  }
+  
+  [data-theme="light"] .btn-info:hover {
+    background: rgba(59, 130, 246, 0.25);
+    border-color: #1d4ed8;
+  }
+  
+  [data-theme="light"] .btn-secondary {
+    background: rgba(107, 114, 128, 0.15);
+    border-color: #6b7280;
+    color: #374151;
+  }
+  
+  [data-theme="light"] .btn-secondary:hover {
+    background: rgba(107, 114, 128, 0.25);
+    border-color: #4b5563;
+  }
+  
+  /* ...existing code... */
+
 .control-item .status {
   font-size: 0.8rem;
   color: var(--text-tertiary);
