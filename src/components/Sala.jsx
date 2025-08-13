@@ -387,4 +387,3 @@ function Sala() {
 }
 
 export default Sala;
-export default Sala;
