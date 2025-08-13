@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   subscribeToDeviceStatus,
-  subscribeToSensorData,
 } from "../utils/esp32Service";
 
 function Log() {
@@ -29,17 +28,12 @@ function Log() {
       "quarto/luz",
       "quarto/tomada",
       "quarto/cortina",
-      "garagem/status",
     ];
 
     topics.forEach((topic) => {
       subscribeToDeviceStatus(topic, (msg) => addLog(topic, msg));
     });
 
-    // Sensores da sala
-    subscribeToSensorData("sala/sensores", (msg) =>
-      addLog("sala/sensores", JSON.stringify(msg))
-    );
   }, []);
 
   return (

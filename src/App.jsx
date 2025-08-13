@@ -13,21 +13,28 @@ import "./App.css";
 function App() {
   const [esp32Status, setEsp32Status] = useState("Conectando...");
   const [mqttStatus, setMqttStatus] = useState("Desconectado");
-  const [theme, setTheme] = useState("dark");
+  const [isDarkTheme, setIsDarkTheme] = useState(true);
 
-  // Função para alternar tema
+  // Theme toggle function
   const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    setTheme(newTheme);
-    document.documentElement.setAttribute("data-theme", newTheme);
-    localStorage.setItem("theme", newTheme);
+    const newTheme = !isDarkTheme;
+    setIsDarkTheme(newTheme);
+    
+    // Apply theme to document root
+    if (newTheme) {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
   };
 
-  // Carregar tema salvo no localStorage
+  // Initialize theme on component mount
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") || "dark";
-    setTheme(savedTheme);
-    document.documentElement.setAttribute("data-theme", savedTheme);
+    if (isDarkTheme) {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
   }, []);
 
   // Conectar ao MQTT quando o componente for montado
@@ -97,9 +104,9 @@ function App() {
             MQTT: {mqttStatus}
           </div>
           <label className="theme-toggle">
-            <input
-              type="checkbox"
-              checked={theme === "light"}
+            <input 
+              type="checkbox" 
+              checked={!isDarkTheme} 
               onChange={toggleTheme}
             />
             <span className="theme-slider">

@@ -225,6 +225,8 @@ function Sala() {
       setLuzSala('ligada')
     }
   }
+
+  // Mobile toggle function
   const toggleMobileExpanded = () => {
     if (window.innerWidth <= 768) {
       setIsExpanded(!isExpanded);
@@ -241,19 +243,21 @@ function Sala() {
         🛋️ Sala
       </h2>
       
-      <div className="sensors">
-        <div className="sensor-item">
-          <span className="sensor-icon">🌡️</span>
-          <span className="sensor-value">{temperatura.toFixed(1)}°C</span>
+      <div className={`environment-content ${isExpanded ? 'expanded' : ''}`}>
+        <div className="sensors">
+          <div className="sensor-item">
+            <span className="sensor-icon">🌡️</span>
+            <span className="sensor-value">{temperatura.toFixed(1)}°C</span>
+            <span className="sensor-source">{dataSource === 'dht22' ? 'DHT22' : 'Simulado'}</span>
+          </div>
+          <div className="sensor-item">
+            <span className="sensor-icon">💧</span>
+            <span className="sensor-value">{umidade.toFixed(1)}%</span>
+            <span className="sensor-time">
+              {lastSensorUpdate ? lastSensorUpdate.toLocaleTimeString() : 'Nunca'}
+            </span>
+          </div>
         </div>
-        <div className="sensor-item">
-          <span className="sensor-icon">💧</span>
-          <span className="sensor-value">{umidade.toFixed(1)}%</span>
-          <span className="sensor-time">
-            {lastSensorUpdate ? lastSensorUpdate.toLocaleTimeString() : 'Esperando Autualização...'}  
-          </span>
-        </div>
-      </div>
 
         <div className="controls">
           <div className="control-item">

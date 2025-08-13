@@ -38,6 +38,7 @@
 }
 
 body {
+  font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
   background: var(--bg-body);
@@ -86,6 +87,7 @@ html {
 
 .theme-slider:before {
   position: absolute;
+  z-index: 999;
   content: "";
   height: 22px;
   width: 22px;
@@ -239,7 +241,7 @@ html {
 
 .environment-card {
   margin-top: 10px;
-  background: rgba(30, 30, 30, 0.8);
+  background: var(--bg-secondary);
   backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 1.5rem;
@@ -509,7 +511,7 @@ html {
   min-width: 120px;
 }
 
-/* Responsividade - Enhanced for mobile dropdown */
+/* Responsividade */
 @media (max-width: 768px) {
   .environments {
     grid-template-columns: 1fr;
@@ -539,36 +541,6 @@ html {
 
   .environment-card {
     padding: 1rem;
-    overflow: hidden;
-  }
-  
-  /* Mobile dropdown functionality */
-  .environment-card h2 {
-    cursor: pointer;
-    padding: 15px;
-    margin: -1rem -1rem 0 -1rem;
-    background: rgba(20, 20, 20, 0.8);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    position: relative;
-    user-select: none;
-    transition: all 0.3s ease;
-  }
-  
-  .environment-card h2:hover {
-    background: rgba(40, 40, 40, 0.8);
-  }
-  
-  .environment-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
-    padding: 0;
-  }
-  
-  .environment-content.expanded {
-    max-height: 2000px;
-    padding: 1rem 0 0 0;
-    transition: max-height 0.4s ease-in, padding 0.4s ease-in;
   }
 
 
