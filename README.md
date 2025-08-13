@@ -29,7 +29,7 @@
 
 ```bash
 # Clone o repositório
-git clone https://github.com/ThiagoM22/casaAutomaticasenai.git
+git clone https://github.com/ThiagoM22/casaAutomaticasenai
 
 # Acesse o diretório do projeto
 cd casaAutomaticasenai
