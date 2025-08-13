@@ -9,6 +9,7 @@ function Sala() {
   const [umidade, setUmidade] = useState(60.0)
   const [lastSensorUpdate, setLastSensorUpdate] = useState(null)
   const [dataSource, setDataSource] = useState('simulado')
+  const [isExpanded, setIsExpanded] = useState(false)
 
   // Refs para prevenir re-execução desnecessária
   const callbacksRegistered = useRef(false)
@@ -232,103 +233,117 @@ function Sala() {
     setLastSensorUpdate(new Date())
   }
 
+  // Mobile toggle function
+  const toggleMobileExpanded = () => {
+    if (window.innerWidth <= 768) {
+      setIsExpanded(!isExpanded);
+    }
+  };
+
   return (
     <div className="environment-card">
-      <h2>🛋️ Sala</h2>
+      <h2 
+        className={isExpanded ? 'expanded' : ''} 
+        onClick={toggleMobileExpanded}
+      >
+        🛋️ Sala
+      </h2>
       
-      <div className="sensors">
-        <div className="sensor-item">
-          <span className="sensor-icon">🌡️</span>
-          <span className="sensor-value">{temperatura.toFixed(1)}°C</span>
-          <span className="sensor-source">{dataSource === 'dht22' ? 'DHT22' : 'Simulado'}</span>
-        </div>
-        <div className="sensor-item">
-          <span className="sensor-icon">💧</span>
-          <span className="sensor-value">{umidade.toFixed(1)}%</span>
-          <span className="sensor-time">
-            {lastSensorUpdate ? lastSensorUpdate.toLocaleTimeString() : 'Nunca'}
-          </span>
-        </div>
-      </div>
-
-      <div style={{ marginBottom: '1rem' }}>
-        <button 
-          className="btn btn-info" 
-          onClick={testarTemperatura}
-          style={{ fontSize: '0.8rem', padding: '0.5rem' }}
-        >
-          🧪 Teste Temperatura
-        </button>
-      </div>
-
-      <div className="controls">
-        <div className="control-item">
-          <h3>Ar-condicionado</h3>
-          <div className="button-group">
-            <button 
-              className="btn btn-info"
-              onClick={ligarArCondicionado}
-              disabled={arCondicionado === 'ligado'}
-            >
-              🌀 Ligar
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={desligarArCondicionado}
-              disabled={arCondicionado === 'desligado'}
-            >
-              ❄️ Desligar
-            </button>
+      <div className={`environment-content ${isExpanded ? 'expanded' : ''}`}>
+        <div className="sensors">
+          <div className="sensor-item">
+            <span className="sensor-icon">🌡️</span>
+            <span className="sensor-value">{temperatura.toFixed(1)}°C</span>
+            <span className="sensor-source">{dataSource === 'dht22' ? 'DHT22' : 'Simulado'}</span>
           </div>
-          <span className={`status ${arCondicionado === 'ligado' ? 'status-active' : 'status-inactive'}`}>
-            Status: {arCondicionado}
-          </span>
+          <div className="sensor-item">
+            <span className="sensor-icon">💧</span>
+            <span className="sensor-value">{umidade.toFixed(1)}%</span>
+            <span className="sensor-time">
+              {lastSensorUpdate ? lastSensorUpdate.toLocaleTimeString() : 'Nunca'}
+            </span>
+          </div>
         </div>
 
-        <div className="control-item">
-          <h3>Umidificador</h3>
-          <div className="button-group">
-            <button 
-              className="btn btn-info"
-              onClick={ligarUmidificador}
-              disabled={umidificador === 'ligado'}
-            >
-              🌊 Ligar
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={desligarUmidificador}
-              disabled={umidificador === 'desligado'}
-            >
-              💨 Desligar
-            </button>
-          </div>
-          <span className={`status ${umidificador === 'ligado' ? 'status-active' : 'status-inactive'}`}>
-            Status: {umidificador}
-          </span>
+        <div style={{ marginBottom: '1rem' }}>
+          <button 
+            className="btn btn-info" 
+            onClick={testarTemperatura}
+            style={{ fontSize: '0.8rem', padding: '0.5rem' }}
+          >
+            🧪 Teste Temperatura
+          </button>
         </div>
 
-        <div className="control-item">
-          <h3>Luz da Sala</h3>
-          <div className="button-group">
-            <button 
-              className="btn btn-warning"
-              onClick={ligarLuzSala}
-              disabled={luzSala === 'ligada'}
-            >
-              🔆 Ligar
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={desligarLuzSala}
-              disabled={luzSala === 'desligada'}
-            >
-              💡 Desligar
-            </button>
+        <div className="controls">
+          <div className="control-item">
+            <h3>Ar-condicionado</h3>
+            <div className="button-group">
+              <button 
+                className="btn btn-info"
+                onClick={ligarArCondicionado}
+                disabled={arCondicionado === 'ligado'}
+              >
+                🌀 Ligar
+              </button>
+              <button 
+                className="btn btn-secondary"
+                onClick={desligarArCondicionado}
+                disabled={arCondicionado === 'desligado'}
+              >
+                ❄️ Desligar
+              </button>
+            </div>
+            <span className={`status ${arCondicionado === 'ligado' ? 'status-active' : 'status-inactive'}`}>
+              Status: {arCondicionado}
+            </span>
           </div>
-          <span className={`status ${luzSala === 'ligada' ? 'status-active' : 'status-inactive'}`}>
-            Status: {luzSala}
-          </span>
+
+          <div className="control-item">
+            <h3>Umidificador</h3>
+            <div className="button-group">
+              <button 
+                className="btn btn-info"
+                onClick={ligarUmidificador}
+                disabled={umidificador === 'ligado'}
+              >
+                🌊 Ligar
+              </button>
+              <button 
+                className="btn btn-secondary"
+                onClick={desligarUmidificador}
+                disabled={umidificador === 'desligado'}
+              >
+                💨 Desligar
+              </button>
+            </div>
+            <span className={`status ${umidificador === 'ligado' ? 'status-active' : 'status-inactive'}`}>
+              Status: {umidificador}
+            </span>
+          </div>
+
+          <div className="control-item">
+            <h3>Luz da Sala</h3>
+            <div className="button-group">
+              <button 
+                className="btn btn-warning"
+                onClick={ligarLuzSala}
+                disabled={luzSala === 'ligada'}
+              >
+                🔆 Ligar
+              </button>
+              <button 
+                className="btn btn-secondary"
+                onClick={desligarLuzSala}
+                disabled={luzSala === 'desligada'}
+              >
+                💡 Desligar
+              </button>
+            </div>
+            <span className={`status ${luzSala === 'ligada' ? 'status-active' : 'status-inactive'}`}>
+              Status: {luzSala}
+            </span>
+          </div>
         </div>
       </div>
     </div>
