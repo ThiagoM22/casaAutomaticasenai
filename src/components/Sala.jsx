@@ -225,12 +225,6 @@ function Sala() {
     }
   }
 
-  const testarTemperatura = () => {
-    console.log('🧪 TESTE MANUAL - Forçando temperatura para 30°C')
-    setTemperatura(30.0)
-    setDataSource('dht22')
-    setLastSensorUpdate(new Date())
-  }
 
   return (
     <div className="environment-card">
@@ -240,25 +234,14 @@ function Sala() {
         <div className="sensor-item">
           <span className="sensor-icon">🌡️</span>
           <span className="sensor-value">{temperatura.toFixed(1)}°C</span>
-          <span className="sensor-source">{dataSource === 'dht22' ? 'DHT22' : 'Simulado'}</span>
         </div>
         <div className="sensor-item">
           <span className="sensor-icon">💧</span>
           <span className="sensor-value">{umidade.toFixed(1)}%</span>
           <span className="sensor-time">
-            {lastSensorUpdate ? lastSensorUpdate.toLocaleTimeString() : 'Nunca'}
+            {lastSensorUpdate ? lastSensorUpdate.toLocaleTimeString() : 'Esperando Autualização...'}  
           </span>
         </div>
-      </div>
-
-      <div style={{ marginBottom: '1rem' }}>
-        <button 
-          className="btn btn-info" 
-          onClick={testarTemperatura}
-          style={{ fontSize: '0.8rem', padding: '0.5rem' }}
-        >
-          🧪 Teste Temperatura
-        </button>
       </div>
 
       <div className="controls">

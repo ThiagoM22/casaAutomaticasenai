@@ -8,11 +8,26 @@ import Garagem from "./components/Garagem";
 import Sala from "./components/Sala";
 import Quarto from "./components/Quarto";
 import "./App.css";
-import Log from "./components/Log";
 
 function App() {
   const [esp32Status, setEsp32Status] = useState("Conectando...");
   const [mqttStatus, setMqttStatus] = useState("Desconectado");
+  const [theme, setTheme] = useState("dark");
+
+  // Função para alternar tema
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
+  };
+
+  // Carregar tema salvo no localStorage
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    setTheme(savedTheme);
+    document.documentElement.setAttribute("data-theme", savedTheme);
+  }, []);
 
   // Conectar ao MQTT quando o componente for montado
   useEffect(() => {
@@ -63,7 +78,7 @@ function App() {
 
   return (
     <div className="App">
-      <header className="header">
+      <header className="environment-card">
         <h1>🏠 Casa Automática</h1>
         <div className="status-container">
           <div
@@ -80,6 +95,17 @@ function App() {
           >
             MQTT: {mqttStatus}
           </div>
+          <label className="theme-toggle">
+            <input
+              type="checkbox"
+              checked={theme === "light"}
+              onChange={toggleTheme}
+            />
+            <span className="theme-slider">
+              <span className="theme-icon moon">🌙</span>
+              <span className="theme-icon sun">☀️</span>
+            </span>
+          </label>
         </div>
       </header>
 
