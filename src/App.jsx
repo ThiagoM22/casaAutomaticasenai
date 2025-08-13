@@ -13,6 +13,29 @@ import Log from "./components/Log";
 function App() {
   const [esp32Status, setEsp32Status] = useState("Conectando...");
   const [mqttStatus, setMqttStatus] = useState("Desconectado");
+  const [isDarkTheme, setIsDarkTheme] = useState(true);
+
+  // Theme toggle function
+  const toggleTheme = () => {
+    const newTheme = !isDarkTheme;
+    setIsDarkTheme(newTheme);
+    
+    // Apply theme to document root
+    if (newTheme) {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  };
+
+  // Initialize theme on component mount
+  useEffect(() => {
+    if (isDarkTheme) {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  }, []);
 
   // Conectar ao MQTT quando o componente for montado
   useEffect(() => {
@@ -80,6 +103,17 @@ function App() {
           >
             MQTT: {mqttStatus}
           </div>
+          <label className="theme-toggle">
+            <input 
+              type="checkbox" 
+              checked={!isDarkTheme} 
+              onChange={toggleTheme}
+            />
+            <span className="theme-slider">
+              <span className="theme-icon moon">🌙</span>
+              <span className="theme-icon sun">☀️</span>
+            </span>
+          </label>
         </div>
       </header>
 
