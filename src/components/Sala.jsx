@@ -9,6 +9,7 @@ function Sala() {
   const [umidade, setUmidade] = useState(60.0)
   const [lastSensorUpdate, setLastSensorUpdate] = useState(null)
   const [dataSource, setDataSource] = useState('simulado')
+  const [isExpanded, setIsExpanded] = useState(false)
 
   // Refs para prevenir re-execução desnecessária
   const callbacksRegistered = useRef(false)
@@ -228,7 +229,12 @@ function Sala() {
 
   return (
     <div className="environment-card">
-      <h2>🛋️ Sala</h2>
+      <h2 
+        className={isExpanded ? 'expanded' : ''} 
+        onClick={toggleMobileExpanded}
+      >
+        🛋️ Sala
+      </h2>
       
       <div className="sensors">
         <div className="sensor-item">
@@ -244,74 +250,75 @@ function Sala() {
         </div>
       </div>
 
-      <div className="controls">
-        <div className="control-item">
-          <h3>Ar-condicionado</h3>
-          <div className="button-group">
-            <button 
-              className="btn btn-info"
-              onClick={ligarArCondicionado}
-              disabled={arCondicionado === 'ligado'}
-            >
-              🌀 Ligar
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={desligarArCondicionado}
-              disabled={arCondicionado === 'desligado'}
-            >
-              ❄️ Desligar
-            </button>
+        <div className="controls">
+          <div className="control-item">
+            <h3>Ar-condicionado</h3>
+            <div className="button-group">
+              <button 
+                className="btn btn-info"
+                onClick={ligarArCondicionado}
+                disabled={arCondicionado === 'ligado'}
+              >
+                🌀 Ligar
+              </button>
+              <button 
+                className="btn btn-secondary"
+                onClick={desligarArCondicionado}
+                disabled={arCondicionado === 'desligado'}
+              >
+                ❄️ Desligar
+              </button>
+            </div>
+            <span className={`status ${arCondicionado === 'ligado' ? 'status-active' : 'status-inactive'}`}>
+              Status: {arCondicionado}
+            </span>
           </div>
-          <span className={`status ${arCondicionado === 'ligado' ? 'status-active' : 'status-inactive'}`}>
-            Status: {arCondicionado}
-          </span>
-        </div>
 
-        <div className="control-item">
-          <h3>Umidificador</h3>
-          <div className="button-group">
-            <button 
-              className="btn btn-info"
-              onClick={ligarUmidificador}
-              disabled={umidificador === 'ligado'}
-            >
-              🌊 Ligar
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={desligarUmidificador}
-              disabled={umidificador === 'desligado'}
-            >
-              💨 Desligar
-            </button>
+          <div className="control-item">
+            <h3>Umidificador</h3>
+            <div className="button-group">
+              <button 
+                className="btn btn-info"
+                onClick={ligarUmidificador}
+                disabled={umidificador === 'ligado'}
+              >
+                🌊 Ligar
+              </button>
+              <button 
+                className="btn btn-secondary"
+                onClick={desligarUmidificador}
+                disabled={umidificador === 'desligado'}
+              >
+                💨 Desligar
+              </button>
+            </div>
+            <span className={`status ${umidificador === 'ligado' ? 'status-active' : 'status-inactive'}`}>
+              Status: {umidificador}
+            </span>
           </div>
-          <span className={`status ${umidificador === 'ligado' ? 'status-active' : 'status-inactive'}`}>
-            Status: {umidificador}
-          </span>
-        </div>
 
-        <div className="control-item">
-          <h3>Luz da Sala</h3>
-          <div className="button-group">
-            <button 
-              className="btn btn-warning"
-              onClick={ligarLuzSala}
-              disabled={luzSala === 'ligada'}
-            >
-              🔆 Ligar
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={desligarLuzSala}
-              disabled={luzSala === 'desligada'}
-            >
-              💡 Desligar
-            </button>
+          <div className="control-item">
+            <h3>Luz da Sala</h3>
+            <div className="button-group">
+              <button 
+                className="btn btn-warning"
+                onClick={ligarLuzSala}
+                disabled={luzSala === 'ligada'}
+              >
+                🔆 Ligar
+              </button>
+              <button 
+                className="btn btn-secondary"
+                onClick={desligarLuzSala}
+                disabled={luzSala === 'desligada'}
+              >
+                💡 Desligar
+              </button>
+            </div>
+            <span className={`status ${luzSala === 'ligada' ? 'status-active' : 'status-inactive'}`}>
+              Status: {luzSala}
+            </span>
           </div>
-          <span className={`status ${luzSala === 'ligada' ? 'status-active' : 'status-inactive'}`}>
-            Status: {luzSala}
-          </span>
         </div>
       </div>
     </div>

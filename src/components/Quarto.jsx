@@ -5,6 +5,7 @@ function Quarto() {
   const [cortina, setCortina] = useState('fechada')
   const [luzQuarto, setLuzQuarto] = useState('desligada')
   const [tomada, setTomada] = useState('desligada')
+  const [isExpanded, setIsExpanded] = useState(false)
 
   const callbacksRegistered = useRef(false)
 
@@ -105,78 +106,92 @@ function Quarto() {
     }
   }
 
+  // Mobile toggle function
+  const toggleMobileExpanded = () => {
+    if (window.innerWidth <= 768) {
+      setIsExpanded(!isExpanded);
+    }
+  };
+
   return (
     <div className="environment-card">
-      <h2>🛏️ Quarto</h2>
+      <h2 
+        className={isExpanded ? 'expanded' : ''} 
+        onClick={toggleMobileExpanded}
+      >
+        🛏️ Quarto
+      </h2>
       
-      <div className="controls">
-        <div className="control-item">
-          <h3>Cortina</h3>
-          <div className="button-group">
-            <button 
-              className="btn btn-warning"
-              onClick={abrirCortina}
-              disabled={cortina === 'aberta'}
-            >
-              🌅 Abrir
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={fecharCortina}
-              disabled={cortina === 'fechada'}
-            >
-              🪟 Fechar
-            </button>
+      <div className={`environment-content ${isExpanded ? 'expanded' : ''}`}>
+        <div className="controls">
+          <div className="control-item">
+            <h3>Cortina</h3>
+            <div className="button-group">
+              <button 
+                className="btn btn-warning"
+                onClick={abrirCortina}
+                disabled={cortina === 'aberta'}
+              >
+                🌅 Abrir
+              </button>
+              <button 
+                className="btn btn-secondary"
+                onClick={fecharCortina}
+                disabled={cortina === 'fechada'}
+              >
+                🪟 Fechar
+              </button>
+            </div>
+            <span className={`status ${cortina === 'aberta' ? 'status-active' : 'status-inactive'}`}>
+              Status: {cortina}
+            </span>
           </div>
-          <span className={`status ${cortina === 'aberta' ? 'status-active' : 'status-inactive'}`}>
-            Status: {cortina}
-          </span>
-        </div>
 
-        <div className="control-item">
-          <h3>Luz do Quarto</h3>
-          <div className="button-group">
-            <button 
-              className="btn btn-warning"
-              onClick={ligarLuzQuarto}
-              disabled={luzQuarto === 'ligada'}
-            >
-              🔆 Ligar
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={desligarLuzQuarto}
-              disabled={luzQuarto === 'desligada'}
-            >
-              💡 Desligar
-            </button>
+          <div className="control-item">
+            <h3>Luz do Quarto</h3>
+            <div className="button-group">
+              <button 
+                className="btn btn-warning"
+                onClick={ligarLuzQuarto}
+                disabled={luzQuarto === 'ligada'}
+              >
+                🔆 Ligar
+              </button>
+              <button 
+                className="btn btn-secondary"
+                onClick={desligarLuzQuarto}
+                disabled={luzQuarto === 'desligada'}
+              >
+                💡 Desligar
+              </button>
+            </div>
+            <span className={`status ${luzQuarto === 'ligada' ? 'status-active' : 'status-inactive'}`}>
+              Status: {luzQuarto}
+            </span>
           </div>
-          <span className={`status ${luzQuarto === 'ligada' ? 'status-active' : 'status-inactive'}`}>
-            Status: {luzQuarto}
-          </span>
-        </div>
 
-        <div className="control-item">
-          <h3>Tomada</h3>
-          <div className="button-group">
-            <button 
-              className="btn btn-success"
-              onClick={ligarTomada}
-              disabled={tomada === 'ligada'}
-            >
-              ⚡ Ligar
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={desligarTomada}
-              disabled={tomada === 'desligada'}
-            >
-              🔌 Desligar
-            </button>
+          <div className="control-item">
+            <h3>Tomada</h3>
+            <div className="button-group">
+              <button 
+                className="btn btn-success"
+                onClick={ligarTomada}
+                disabled={tomada === 'ligada'}
+              >
+                ⚡ Ligar
+              </button>
+              <button 
+                className="btn btn-secondary"
+                onClick={desligarTomada}
+                disabled={tomada === 'desligada'}
+              >
+                🔌 Desligar
+              </button>
+            </div>
+            <span className={`status ${tomada === 'ligada' ? 'status-active' : 'status-inactive'}`}>
+              Status: {tomada}
+            </span>
           </div>
-          <span className={`status ${tomada === 'ligada' ? 'status-active' : 'status-inactive'}`}>
-            Status: {tomada}
-          </span>
         </div>
       </div>
     </div>
