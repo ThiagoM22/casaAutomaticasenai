@@ -321,7 +321,6 @@ function Sala() {
           </div>
         </div>
       </div>
-    </div>
   )
 }
 
