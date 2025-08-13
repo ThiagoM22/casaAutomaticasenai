@@ -14,3 +14,30 @@
   <img alt="Vite" src="https://img.shields.io/badge/Vite-646CFF.svg?style=flat&logo=Vite&logoColor=white">
   <img alt="Bootstrap" src="https://img.shields.io/badge/Bootstrap-7952B3.svg?style=flat&logo=Bootstrap&logoColor=white">
 </div>
+
+🛠️ **[Funcionalidades]:**
+- Interface interativa para simulação de automação residencial. <br />
+- Controle de dispositivos como luzes, ventiladores e sensores. <br />
+- Feedback visual em tempo real das ações realizadas.
+
+### ✅ Pré-requisitos
+
+- **NODEjs**
+- **Gerenciador NPM**
+
+### 💾 Instalação
+
+```bash
+# Clone o repositório
+git clone https://github.com/ThiagoM22/casaAutomaticasenai.git
+
+# Acesse o diretório do projeto
+cd casaAutomaticasenai
+
+# Instale as dependências
+npm install
+
+# Rode a aplicação
+npm run dev
+
+
