@@ -225,6 +225,11 @@ function Sala() {
       setLuzSala('ligada')
     }
   }
+  const toggleMobileExpanded = () => {
+    if (window.innerWidth <= 768) {
+      setIsExpanded(!isExpanded);
+    }
+  };
 
 
   return (
