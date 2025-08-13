@@ -7,6 +7,7 @@ import {
 import Garagem from "./components/Garagem";
 import Sala from "./components/Sala";
 import Quarto from "./components/Quarto";
+import Log from "./components/Log";
 import "./App.css";
 
 function App() {
