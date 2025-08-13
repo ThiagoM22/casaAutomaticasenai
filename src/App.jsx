@@ -7,8 +7,8 @@ import {
 import Garagem from "./components/Garagem";
 import Sala from "./components/Sala";
 import Quarto from "./components/Quarto";
-import "./App.css";
 import Log from "./components/Log";
+import "./App.css";
 
 function App() {
   const [esp32Status, setEsp32Status] = useState("Conectando...");
@@ -86,7 +86,7 @@ function App() {
 
   return (
     <div className="App">
-      <header className="header">
+      <header className="environment-card">
         <h1>🏠 Casa Automática</h1>
         <div className="status-container">
           <div

@@ -519,6 +519,7 @@ html {
     padding: 0 1rem;
   }
 
+
   .header {
     flex-direction: column;
     gap: 1rem;
@@ -526,18 +527,22 @@ html {
     padding: 1rem;
   }
 
+
   .status-container {
     flex-direction: column;
     gap: 0.5rem;
   }
 
+
   .header h1 {
     font-size: 1.5rem;
   }
 
+
   .environment-card {
     padding: 1rem;
   }
+
 
   .main-content {
     padding: 1rem;
