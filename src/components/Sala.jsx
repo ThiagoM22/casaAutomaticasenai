@@ -8,31 +8,22 @@ function Sala() {
   const [temperatura, setTemperatura] = useState(25.0)
   const [umidade, setUmidade] = useState(60.0)
   const [lastSensorUpdate, setLastSensorUpdate] = useState(null)
-  const [dataSource, setDataSource] = useState('simulado') // 'dht22' ou 'simulado'
+  const [dataSource, setDataSource] = useState('simulado')
 
-  // Refs para acessar valores atuais nos callbacks
-  const temperaturaRef = useRef(temperatura)
-  const umidadeRef = useRef(umidade)
+  // Refs para prevenir re-execução desnecessária
+  const callbacksRegistered = useRef(false)
+  const sensorIntervalRef = useRef(null)
 
-  // Atualizar refs quando os estados mudarem
+  // Subscrever APENAS uma vez quando componente monta
   useEffect(() => {
-    temperaturaRef.current = temperatura
-    console.log('🌡️ Ref temperatura atualizada para:', temperatura)
-  }, [temperatura])
+    if (callbacksRegistered.current) return // Prevenir dupla execução
 
-  useEffect(() => {
-    umidadeRef.current = umidade
-    console.log('💧 Ref umidade atualizada para:', umidade)
-  }, [umidade])
+    console.log('🔗 Registrando callbacks da Sala (ÚNICA VEZ)...')
 
-  // Subscrever a dados dos sensores e status dos dispositivos via MQTT
-  useEffect(() => {
     // Callback para dados dos sensores DHT22
     const handleSensorData = (data) => {
       console.log('🌡️💧 === PROCESSANDO DADOS DO SENSOR DHT22 ===')
       console.log('📨 Dados brutos recebidos:', data)
-      console.log('📊 Tipo dos dados:', typeof data)
-      console.log('📍 Estados atuais - Temp:', temperaturaRef.current, 'Umidade:', umidadeRef.current)
       
       let sensorData = data
       let temperaturaProcessada = false
@@ -43,13 +34,11 @@ function Sala() {
         console.log('📝 Processando dados como string:', data)
         
         try {
-          // Tentar parse JSON primeiro
           sensorData = JSON.parse(data)
           console.log('✅ Parse JSON bem-sucedido:', sensorData)
         } catch {
           console.log('🔍 String não é JSON, tentando extrair valores numericamente...')
           
-          // Tentar formato "25.3,60.2"
           const numeros = data.match(/\d+\.?\d*/g)
           if (numeros && numeros.length >= 2) {
             sensorData = {
@@ -58,7 +47,6 @@ function Sala() {
             }
             console.log('✅ Valores extraídos do formato CSV:', sensorData)
           } else {
-            // Tentar regex mais específicas
             const tempRegex = /temp[eratura]*[:\s=]*([0-9]+\.?[0-9]*)/i
             const humRegex = /hum[idade]*[:\s=]*([0-9]+\.?[0-9]*)/i
             
@@ -72,7 +60,7 @@ function Sala() {
               console.log('✅ Valores extraídos com regex específica:', sensorData)
             } else {
               console.warn('⚠️ Não foi possível extrair dados da string:', data)
-              return // Sair se não conseguir processar
+              return
             }
           }
         }
@@ -80,221 +68,163 @@ function Sala() {
       
       console.log('🔍 Dados finais para processamento:', sensorData)
       
-      // Processar temperatura - com logs detalhados
+      // Processar temperatura
       const tempFields = ['temperature', 'temp', 'Temperature', 'Temp', 'TEMP', 'temperatura']
-      console.log('🌡️ Procurando campos de temperatura em:', Object.keys(sensorData))
-      
       for (const field of tempFields) {
         if (sensorData[field] !== undefined) {
-          const tempValue = sensorData[field]
-          console.log(`🌡️ Campo temperatura encontrado: ${field} = ${tempValue} (tipo: ${typeof tempValue})`)
-          
-          const temp = parseFloat(tempValue)
-          console.log(`🌡️ Valor parseado: ${temp}`)
-          
+          const temp = parseFloat(sensorData[field])
           if (!isNaN(temp) && temp >= -40 && temp <= 80) {
-            console.log(`🌡️ ✅ TEMPERATURA VÁLIDA! Atualizando: ${temperaturaRef.current}°C → ${temp}°C`)
-            
-            // Usar callback para garantir que o estado seja atualizado
-            setTemperatura(prevTemp => {
-              console.log(`🌡️ Callback setState - de ${prevTemp}°C para ${temp}°C`)
-              return temp
-            })
-            
+            console.log(`🌡️ ✅ Atualizando temperatura: ${temp}°C`)
+            setTemperatura(temp)
             setLastSensorUpdate(new Date())
             setDataSource('dht22')
             temperaturaProcessada = true
-            
-            // Verificar se realmente atualizou após um tempo
-            setTimeout(() => {
-              console.log(`🌡️ Verificação após setState - temperatura atual: ${temperatura}°C`)
-            }, 500)
-            
             break
-          } else {
-            console.warn(`⚠️ Temperatura fora do range válido: ${temp}°C`)
           }
         }
-      }
-      
-      if (!temperaturaProcessada) {
-        console.warn('🌡️ ❌ NENHUM CAMPO DE TEMPERATURA ENCONTRADO!')
-        console.log('🔍 Campos disponíveis:', Object.keys(sensorData))
-        console.log('🔍 Campos procurados:', tempFields)
       }
       
       // Processar umidade
       const humFields = ['humidity', 'hum', 'umidade', 'Humidity', 'Hum', 'HUM']
-      console.log('💧 Procurando campos de umidade em:', Object.keys(sensorData))
-      
       for (const field of humFields) {
         if (sensorData[field] !== undefined) {
-          const humValue = sensorData[field]
-          console.log(`💧 Campo umidade encontrado: ${field} = ${humValue} (tipo: ${typeof humValue})`)
-          
-          const hum = parseFloat(humValue)
-          console.log(`💧 Valor parseado: ${hum}`)
-          
+          const hum = parseFloat(sensorData[field])
           if (!isNaN(hum) && hum >= 0 && hum <= 100) {
-            console.log(`💧 ✅ UMIDADE VÁLIDA! Atualizando: ${umidadeRef.current}% → ${hum}%`)
-            
-            setUmidade(prevHum => {
-              console.log(`💧 Callback setState - de ${prevHum}% para ${hum}%`)
-              return hum
-            })
-            
+            console.log(`💧 ✅ Atualizando umidade: ${hum}%`)
+            setUmidade(hum)
             setLastSensorUpdate(new Date())
             setDataSource('dht22')
             umidadeProcessada = true
             break
-          } else {
-            console.warn(`⚠️ Umidade fora do range válido: ${hum}%`)
           }
         }
       }
       
-      if (!umidadeProcessada) {
-        console.warn('💧 ❌ NENHUM CAMPO DE UMIDADE ENCONTRADO!')
-        console.log('🔍 Campos disponíveis:', Object.keys(sensorData))
-        console.log('🔍 Campos procurados:', humFields)
-      }
-      
       if (temperaturaProcessada || umidadeProcessada) {
         console.log('✅ === DADOS PROCESSADOS COM SUCESSO ===')
-        console.log(`📊 Status processamento - Temp: ${temperaturaProcessada ? '✅' : '❌'}, Umidade: ${umidadeProcessada ? '✅' : '❌'}`)
-      } else {
-        console.warn('⚠️ === NENHUM DADO VÁLIDO ENCONTRADO ===')
-        console.log('🔍 Formato esperado: {"temperature": 25.3, "humidity": 60.2}')
-        console.log('🔍 Ou formato CSV: "25.3,60.2"')
-        console.log('🔍 Dados recebidos:', data)
       }
     }
 
-    // Callbacks para status dos dispositivos
+    // Callbacks para status dos dispositivos - SEM interferir com estado local
     const handleACStatus = (status) => {
-      console.log('📨 Status AC recebido:', status)
-      setArCondicionado(status === 'ligado' || status === 'on' || status === '1' ? 'ligado' : 'desligado')
+      console.log('📨 Status AC recebido via MQTT (IGNORADO - usando local):', status)
+      // COMENTADO para não interferir com controle local
+      // setArCondicionado(...)
     }
 
     const handleHumidifierStatus = (status) => {
-      console.log('📨 Status umidificador recebido:', status)
-      setUmidificador(status === 'ligado' || status === 'on' || status === '1' ? 'ligado' : 'desligado')
+      console.log('📨 Status umidificador recebido via MQTT (IGNORADO - usando local):', status)
+      // COMENTADO para não interferir com controle local
+      // setUmidificador(...)
     }
 
     const handleLightStatus = (status) => {
-      console.log('📨 Status luz sala recebido:', status)
-      setLuzSala(status === 'ligada' || status === 'on' || status === '1' ? 'ligada' : 'desligada')
+      console.log('📨 Status luz sala recebido via MQTT (IGNORADO - usando local):', status)
+      // COMENTADO para não interferir com controle local
+      // setLuzSala(...)
     }
 
-    // Subscrever aos tópicos MQTT
-    console.log('🔗 Registrando callbacks da Sala...')
+    // Registrar callbacks APENAS para sensores (não dispositivos)
     subscribeToSensorData('sala/sensores', handleSensorData)
     subscribeToDeviceStatus('sala/ac', handleACStatus)
     subscribeToDeviceStatus('sala/umidificador', handleHumidifierStatus)
     subscribeToDeviceStatus('sala/luz', handleLightStatus)
 
-    // Fallback: simulação apenas se não receber dados reais
-    const fallbackInterval = setInterval(() => {
+    // Simulação APENAS de sensores, sem tocar nos dispositivos
+    sensorIntervalRef.current = setInterval(() => {
       if (dataSource === 'simulado') {
-        console.log('🎲 Usando dados simulados (nenhum dado real recebido)')
         setTemperatura(prev => {
           const variation = (Math.random() - 0.5) * 2
-          const newTemp = Math.max(18, Math.min(35, prev + variation))
-          console.log(`🎲 Simulação temperatura: ${prev}°C → ${newTemp}°C`)
-          return newTemp
+          return Math.max(18, Math.min(35, prev + variation))
         })
         setUmidade(prev => {
           const variation = (Math.random() - 0.5) * 5
-          const newHum = Math.max(30, Math.min(80, prev + variation))
-          console.log(`🎲 Simulação umidade: ${prev}% → ${newHum}%`)
-          return newHum
+          return Math.max(30, Math.min(80, prev + variation))
         })
-      } else {
-        // Verificar se os dados estão muito antigos (mais de 1 minuto)
-        const now = new Date()
-        if (lastSensorUpdate && (now - lastSensorUpdate) > 60000) {
-          console.log('⚠️ Dados do DHT22 muito antigos, voltando para simulação')
-          setDataSource('simulado')
-        }
       }
-    }, 5000) // Verificar a cada 5 segundos
+    }, 15000) // 15 segundos
+
+    callbacksRegistered.current = true
 
     return () => {
-      clearInterval(fallbackInterval)
+      if (sensorIntervalRef.current) {
+        clearInterval(sensorIntervalRef.current)
+      }
     }
-  }, [lastSensorUpdate, dataSource])
-
-  // Log quando temperatura muda
-  useEffect(() => {
-    console.log(`🌡️ Estado temperatura mudou para: ${temperatura}°C`)
-  }, [temperatura])
-
-  // Log quando umidade muda
-  useEffect(() => {
-    console.log(`💧 Estado umidade mudou para: ${umidade}%`)
-  }, [umidade])
+  }, []) // ARRAY VAZIO - executar apenas uma vez
 
   const ligarArCondicionado = async () => {
     try {
-      console.log('🎯 Enviando comando: ligar para ar-condicionado')
+      console.log('🎯 Ligando ar-condicionado...')
+      setArCondicionado('ligado')
       await sendCommand('sala/ac', 'ligar')
-      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
+      console.log('✅ Ar-condicionado ligado com sucesso')
     } catch (error) {
       console.error('❌ Erro ao ligar ar-condicionado:', error)
+      setArCondicionado('desligado')
     }
   }
 
   const desligarArCondicionado = async () => {
     try {
-      console.log('🎯 Enviando comando: desligar para ar-condicionado')
+      console.log('🎯 Desligando ar-condicionado...')
+      setArCondicionado('desligado')
       await sendCommand('sala/ac', 'desligar')
-      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
+      console.log('✅ Ar-condicionado desligado com sucesso')
     } catch (error) {
       console.error('❌ Erro ao desligar ar-condicionado:', error)
+      setArCondicionado('ligado')
     }
   }
 
   const ligarUmidificador = async () => {
     try {
-      console.log('🎯 Enviando comando: ligar para umidificador')
+      console.log('🎯 Ligando umidificador...')
+      setUmidificador('ligado')
       await sendCommand('sala/umidificador', 'ligar')
-      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
+      console.log('✅ Umidificador ligado com sucesso')
     } catch (error) {
       console.error('❌ Erro ao ligar umidificador:', error)
+      setUmidificador('desligado')
     }
   }
 
   const desligarUmidificador = async () => {
     try {
-      console.log('🎯 Enviando comando: desligar para umidificador')
+      console.log('🎯 Desligando umidificador...')
+      setUmidificador('desligado')
       await sendCommand('sala/umidificador', 'desligar')
-      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
+      console.log('✅ Umidificador desligado com sucesso')
     } catch (error) {
       console.error('❌ Erro ao desligar umidificador:', error)
+      setUmidificador('ligado')
     }
   }
 
   const ligarLuzSala = async () => {
     try {
-      console.log('🎯 Enviando comando: ligar para luz da sala')
+      console.log('🎯 Ligando luz da sala...')
+      setLuzSala('ligada')
       await sendCommand('sala/luz', 'ligar')
-      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
+      console.log('✅ Luz da sala ligada com sucesso')
     } catch (error) {
       console.error('❌ Erro ao ligar luz da sala:', error)
+      setLuzSala('desligada')
     }
   }
 
   const desligarLuzSala = async () => {
     try {
-      console.log('🎯 Enviando comando: desligar para luz da sala')
+      console.log('🎯 Desligando luz da sala...')
+      setLuzSala('desligada')
       await sendCommand('sala/luz', 'desligar')
-      console.log('✅ Comando enviado com sucesso, aguardando resposta via MQTT...')
+      console.log('✅ Luz da sala desligada com sucesso')
     } catch (error) {
       console.error('❌ Erro ao desligar luz da sala:', error)
+      setLuzSala('ligada')
     }
   }
 
-  // Função de teste manual para debug
   const testarTemperatura = () => {
     console.log('🧪 TESTE MANUAL - Forçando temperatura para 30°C')
     setTemperatura(30.0)
@@ -321,7 +251,6 @@ function Sala() {
         </div>
       </div>
 
-      {/* Botão de teste - temporário para debug */}
       <div style={{ marginBottom: '1rem' }}>
         <button 
           className="btn btn-info" 
@@ -339,17 +268,21 @@ function Sala() {
             <button 
               className="btn btn-info"
               onClick={ligarArCondicionado}
+              disabled={arCondicionado === 'ligado'}
             >
               🌀 Ligar
             </button>
             <button 
               className="btn btn-secondary"
               onClick={desligarArCondicionado}
+              disabled={arCondicionado === 'desligado'}
             >
               ❄️ Desligar
             </button>
           </div>
-          <span className="status">Status: {arCondicionado}</span>
+          <span className={`status ${arCondicionado === 'ligado' ? 'status-active' : 'status-inactive'}`}>
+            Status: {arCondicionado}
+          </span>
         </div>
 
         <div className="control-item">
@@ -358,17 +291,21 @@ function Sala() {
             <button 
               className="btn btn-info"
               onClick={ligarUmidificador}
+              disabled={umidificador === 'ligado'}
             >
               🌊 Ligar
             </button>
             <button 
               className="btn btn-secondary"
               onClick={desligarUmidificador}
+              disabled={umidificador === 'desligado'}
             >
               💨 Desligar
             </button>
           </div>
-          <span className="status">Status: {umidificador}</span>
+          <span className={`status ${umidificador === 'ligado' ? 'status-active' : 'status-inactive'}`}>
+            Status: {umidificador}
+          </span>
         </div>
 
         <div className="control-item">
@@ -377,17 +314,21 @@ function Sala() {
             <button 
               className="btn btn-warning"
               onClick={ligarLuzSala}
+              disabled={luzSala === 'ligada'}
             >
               🔆 Ligar
             </button>
             <button 
               className="btn btn-secondary"
               onClick={desligarLuzSala}
+              disabled={luzSala === 'desligada'}
             >
               💡 Desligar
             </button>
           </div>
-          <span className="status">Status: {luzSala}</span>
+          <span className={`status ${luzSala === 'ligada' ? 'status-active' : 'status-inactive'}`}>
+            Status: {luzSala}
+          </span>
         </div>
       </div>
     </div>
