@@ -7,6 +7,7 @@ function Garagem() {
   const [luzGaragem, setLuzGaragem] = useState('desligada')
 
   const callbacksRegistered = useRef(false)
+  const timerPortaoSocial = useRef(null) // Timer para fechar portão social automaticamente
 
   // Subscrever APENAS uma vez quando componente monta
   useEffect(() => {
@@ -58,9 +59,31 @@ function Garagem() {
     }
   }
 
+  // Função para fechar portão social automaticamente após 5 segundos
+  const fecharPortaoSocialAutomatico = () => {
+    console.log('⏰ Fechando portão social automaticamente após 5 segundos...')
+    
+    // Atualizar status localmente
+    setPortaoSocial('fechado')
+    
+    // Controlar luz automaticamente usando os estados atuais
+    controlarLuzAutomatica('fechado', portaoBasculante)
+    
+    // Enviar comando para ESP32
+    sendCommand('garagem/portao_social', 'fechar').catch(console.error)
+    
+    console.log('✅ Portão social fechado automaticamente')
+  }
+
   const abrirPortaoSocial = async () => {
     try {
       console.log('🎯 Abrindo portão social...')
+      
+      // Limpar timer anterior se existir
+      if (timerPortaoSocial.current) {
+        clearTimeout(timerPortaoSocial.current)
+        timerPortaoSocial.current = null
+      }
       
       // Atualizar status localmente imediatamente
       setPortaoSocial('aberto')
@@ -70,6 +93,14 @@ function Garagem() {
       
       await sendCommand('garagem/portao_social', 'abrir')
       console.log('✅ Portão social aberto com sucesso')
+      
+      // Configurar timer para fechar automaticamente após 5 segundos
+      timerPortaoSocial.current = setTimeout(() => {
+        fecharPortaoSocialAutomatico()
+        timerPortaoSocial.current = null
+      }, 5000)
+      
+      console.log('⏲️ Timer de 5 segundos iniciado para fechar portão social')
     } catch (error) {
       console.error('❌ Erro ao abrir portão social:', error)
       // Reverter em caso de erro
@@ -80,7 +111,14 @@ function Garagem() {
 
   const fecharPortaoSocial = async () => {
     try {
-      console.log('🎯 Fechando portão social...')
+      console.log('🎯 Fechando portão social manualmente...')
+      
+      // Limpar timer se existir (fechamento manual)
+      if (timerPortaoSocial.current) {
+        clearTimeout(timerPortaoSocial.current)
+        timerPortaoSocial.current = null
+        console.log('⏹️ Timer cancelado (fechamento manual)')
+      }
       
       // Atualizar status localmente imediatamente
       setPortaoSocial('fechado')
@@ -89,7 +127,7 @@ function Garagem() {
       controlarLuzAutomatica('fechado', portaoBasculante)
       
       await sendCommand('garagem/portao_social', 'fechar')
-      console.log('✅ Portão social fechado com sucesso')
+      console.log('✅ Portão social fechado manualmente com sucesso')
     } catch (error) {
       console.error('❌ Erro ao fechar portão social:', error)
       // Reverter em caso de erro
@@ -170,6 +208,15 @@ function Garagem() {
     }
   }
 
+  // Limpar timer quando componente for desmontado
+  useEffect(() => {
+    return () => {
+      if (timerPortaoSocial.current) {
+        clearTimeout(timerPortaoSocial.current)
+      }
+    }
+  }, [])
+
   return (
     <div className="environment-card">
       <h2>🚗 Garagem</h2>
@@ -194,7 +241,7 @@ function Garagem() {
             </button>
           </div>
           <span className={`status ${portaoSocial === 'aberto' ? 'status-active' : 'status-inactive'}`}>
-            Status: {portaoSocial}
+            Status: {portaoSocial} {portaoSocial === 'aberto' ? '(5s auto-close)' : ''}
           </span>
         </div>
 
