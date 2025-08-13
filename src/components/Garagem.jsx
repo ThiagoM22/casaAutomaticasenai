@@ -122,33 +122,6 @@ function Garagem() {
     }
   };
 
-  const fecharPortaoSocial = async () => {
-    try {
-      console.log("🎯 Fechando portão social manualmente...");
-
-      // Limpar timer se existir (fechamento manual)
-      if (timerPortaoSocial.current) {
-        clearTimeout(timerPortaoSocial.current);
-        timerPortaoSocial.current = null;
-        console.log("⏹️ Timer cancelado (fechamento manual)");
-      }
-
-      // Atualizar status localmente imediatamente
-      setPortaoSocial("fechado");
-
-      // Controlar luz automaticamente usando os estados atuais
-      controlarLuzAutomatica("fechado", portaoBasculante);
-
-      await sendCommand("garagem/portao_social", "fechar");
-      console.log("✅ Portão social fechado manualmente com sucesso");
-    } catch (error) {
-      console.error("❌ Erro ao fechar portão social:", error);
-      // Reverter em caso de erro
-      setPortaoSocial("aberto");
-      controlarLuzAutomatica("aberto", portaoBasculante);
-    }
-  };
-
   const abrirPortaoBasculante = async () => {
     try {
       console.log("🎯 Abrindo portão basculante...");

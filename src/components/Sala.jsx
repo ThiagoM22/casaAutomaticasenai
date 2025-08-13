@@ -226,13 +226,6 @@ function Sala() {
     }
   }
 
-  const testarTemperatura = () => {
-    console.log('🧪 TESTE MANUAL - Forçando temperatura para 30°C')
-    setTemperatura(30.0)
-    setDataSource('dht22')
-    setLastSensorUpdate(new Date())
-  }
-
   // Mobile toggle function
   const toggleMobileExpanded = () => {
     if (window.innerWidth <= 768) {
@@ -263,16 +256,6 @@ function Sala() {
               {lastSensorUpdate ? lastSensorUpdate.toLocaleTimeString() : 'Nunca'}
             </span>
           </div>
-        </div>
-
-        <div style={{ marginBottom: '1rem' }}>
-          <button 
-            className="btn btn-info" 
-            onClick={testarTemperatura}
-            style={{ fontSize: '0.8rem', padding: '0.5rem' }}
-          >
-            🧪 Teste Temperatura
-          </button>
         </div>
 
         <div className="controls">
